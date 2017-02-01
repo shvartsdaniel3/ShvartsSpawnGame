@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 71c17e11e3e2347ff914fe1537d02fd6
+timeCreated: 1485962645
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Cosmonaut
+  fontNames:
+  - Cosmonaut
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

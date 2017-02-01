@@ -5,35 +5,69 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 
-	public float speed;
 	private Rigidbody2D rb;
-	public GameObject clone;
 	private Vector2 originalLoc;
 	private bool awake = true;
-	public float respawnTime;
 	private IEnumerator coroutine;
+	private SpriteRenderer sr;
+	public float speed;
+	public GameObject clone;
+	public float respawnTime;
 	public Sprite dead;
-	SpriteRenderer sr;
+	public Sprite alive;
+	public float dropSpeed;
+	private bool falling = true;
+	private float dSpeed;
+	private LifeCount lc;
 
 	void Start ()
 	{
 		rb = GetComponent <Rigidbody2D> ();
 		originalLoc = transform.position;
 		gameObject.layer = 8;
-		Physics2D.IgnoreLayerCollision (8, 9, true);
 		sr = gameObject.GetComponent <SpriteRenderer> ();
+		sr.sprite = alive;
+		lc = GameObject.FindObjectOfType<LifeCount> ();
+	}
+
+	void OnCollisionStay2D (Collision2D collision)
+	{
+		if (collision.collider.gameObject.tag.Equals ("floor") == true) {
+			falling = false;
+		}
+	}
+
+	void OnCollisionExit2D (Collision2D collision)
+	{
+		if (collision.collider.gameObject.tag.Equals ("floor") == true) {
+			falling = true;
+		}
 	}
 
 	void Update ()
 	{
 		if (awake == true) {
-			float moveHorizontal = Input.GetAxis ("Horizontal");
-			Vector2 movement = new Vector2 (moveHorizontal, 0);
-			rb.velocity = movement * speed;
-			if (Input.GetKeyDown (KeyCode.R)) {
-				coroutine = Restart ();
-				StartCoroutine (coroutine);
+			rb.isKinematic = false;
+			if (Input.GetKeyDown (KeyCode.R) && falling == false) {
+				StartCoroutine (Restart ());
 			}
+		} else {
+			rb.isKinematic = true;
+		}
+	}
+
+	void FixedUpdate ()
+	{
+		Physics2D.IgnoreLayerCollision (8, 9, true);
+		if (awake == true) {
+			float moveHorizontal = Input.GetAxis ("Horizontal");
+			if (falling) {
+				dSpeed = dropSpeed;
+			} else {
+				dSpeed = 0;
+			}
+			Vector2 movement = new Vector2 (moveHorizontal * speed, dSpeed);
+			rb.velocity = movement;
 		}
 	}
 
@@ -45,5 +79,6 @@ public class Player : MonoBehaviour
 		yield return new WaitForSeconds (respawnTime);
 		gameObject.layer = 9;
 		Instantiate (clone, originalLoc, Quaternion.identity);
+		lc.IncreaseLives ();
 	}
 }
