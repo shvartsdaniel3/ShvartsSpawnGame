@@ -5,20 +5,24 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 
+	private bool jumping = false;
 	private Rigidbody2D rb;
 	private Vector2 originalLoc;
 	private bool awake = true;
 	private IEnumerator coroutine;
 	private SpriteRenderer sr;
+	private bool falling = true;
+	private float dSpeed;
+	private LifeCount lc;
+	private float currentJumpVel;
 	public float speed;
 	public GameObject clone;
 	public float respawnTime;
 	public Sprite dead;
 	public Sprite alive;
 	public float dropSpeed;
-	private bool falling = true;
-	private float dSpeed;
-	private LifeCount lc;
+	public float gravity;
+	public float jumpSpeed;
 
 	void Start ()
 	{
@@ -51,8 +55,24 @@ public class Player : MonoBehaviour
 			if (Input.GetKeyDown (KeyCode.R) && falling == false) {
 				StartCoroutine (Restart ());
 			}
+			if (jumping) {
+				DealWithJumping ();
+			}
 		} else {
 			rb.isKinematic = true;
+		}
+	}
+
+	void DealWithJumping ()
+	{
+		transform.position += new Vector3 (0, currentJumpVel, 0);
+		currentJumpVel -= gravity;
+	}
+
+	void OnCollisionEnter2D (Collision2D collision)
+	{
+		if (collision.collider.gameObject.tag.Equals ("floor") == true) {
+			jumping = false;
 		}
 	}
 
@@ -64,6 +84,10 @@ public class Player : MonoBehaviour
 			if (falling) {
 				dSpeed = dropSpeed;
 			} else {
+				if (Input.GetKeyDown (KeyCode.Space)) {
+					jumping = true;
+					currentJumpVel = jumpSpeed;
+				}
 				dSpeed = 0;
 			}
 			Vector2 movement = new Vector2 (moveHorizontal * speed, dSpeed);
