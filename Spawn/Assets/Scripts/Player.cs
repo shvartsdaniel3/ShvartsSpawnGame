@@ -23,6 +23,8 @@ public class Player : MonoBehaviour
 	public float dropSpeed;
 	public float gravity;
 	public float jumpSpeed;
+	public float jumpSpeed2;
+	private Vector2 movement;
 
 	void Start ()
 	{
@@ -43,7 +45,7 @@ public class Player : MonoBehaviour
 
 	void OnCollisionExit2D (Collision2D collision)
 	{
-		if (collision.collider.gameObject.tag.Equals ("floor") == true) {
+		if (collision.collider.gameObject.tag.Equals ("floor") == true && collision.collider.gameObject.tag != ("Side")) {
 			falling = true;
 		}
 	}
@@ -65,7 +67,7 @@ public class Player : MonoBehaviour
 
 	void DealWithJumping ()
 	{
-		transform.position += new Vector3 (0, currentJumpVel, 0);
+		//rb.AddForce (transform.up * jumpSpeed2, ForceMode2D.Impulse);
 		currentJumpVel -= gravity;
 	}
 
@@ -74,6 +76,7 @@ public class Player : MonoBehaviour
 		if (collision.collider.gameObject.tag.Equals ("floor") == true) {
 			jumping = false;
 		}
+
 	}
 
 	void FixedUpdate ()
@@ -83,14 +86,17 @@ public class Player : MonoBehaviour
 			float moveHorizontal = Input.GetAxis ("Horizontal");
 			if (falling) {
 				dSpeed = dropSpeed;
+				currentJumpVel = dropSpeed;
 			} else {
+				dSpeed = 0;
 				if (Input.GetKeyDown (KeyCode.Space)) {
 					jumping = true;
 					currentJumpVel = jumpSpeed;
+				} else {
+					currentJumpVel = dropSpeed;
 				}
-				dSpeed = 0;
 			}
-			Vector2 movement = new Vector2 (moveHorizontal * speed, dSpeed);
+			movement = new Vector2 (moveHorizontal * speed, z);
 			rb.velocity = movement;
 		}
 	}
