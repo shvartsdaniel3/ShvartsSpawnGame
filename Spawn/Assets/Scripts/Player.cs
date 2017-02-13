@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
 	private IEnumerator coroutine;
 	private SpriteRenderer sr;
 	private bool falling = true;
-	private float dSpeed;
+
 	private LifeCount lc;
 	private float currentJumpVel;
 	public float speed;
@@ -85,10 +85,10 @@ public class Player : MonoBehaviour
 		if (awake == true) {
 			float moveHorizontal = Input.GetAxis ("Horizontal");
 			if (falling) {
-				dSpeed = dropSpeed;
+				//dSpeed = dropSpeed;
 				currentJumpVel = dropSpeed;
 			} else {
-				dSpeed = 0;
+				//dSpeed = 0;
 				if (Input.GetKeyDown (KeyCode.Space)) {
 					jumping = true;
 					currentJumpVel = jumpSpeed;
@@ -96,7 +96,7 @@ public class Player : MonoBehaviour
 					currentJumpVel = dropSpeed;
 				}
 			}
-			movement = new Vector2 (moveHorizontal * speed, z);
+			movement = new Vector2 (moveHorizontal * speed, 0);
 			rb.velocity = movement;
 		}
 	}

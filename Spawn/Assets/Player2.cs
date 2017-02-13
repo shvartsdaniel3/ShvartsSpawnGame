@@ -5,7 +5,6 @@ using UnityEngine;
 public class Player2 : MonoBehaviour
 {
 
-	Rigidbody2D rb;
 	public float jumpForce;
 	public float floorDrag;
 	public float airDrag;
@@ -17,6 +16,7 @@ public class Player2 : MonoBehaviour
 	public float respawnTime;
 	public Sprite dead;
 	public Sprite alive;
+	Rigidbody2D rb;
 	bool jumpFlag;
 	bool onFloor;
 	int floorObjs;
@@ -27,7 +27,7 @@ public class Player2 : MonoBehaviour
 	KeyCode rightA;
 	LifeCount lc;
 	Vector2 originalLoc;
-	bool awake = true;
+	public bool awake = true;
 	IEnumerator coroutine;
 	SpriteRenderer sr;
 
@@ -45,6 +45,8 @@ public class Player2 : MonoBehaviour
 		sr = gameObject.GetComponent <SpriteRenderer> ();
 		sr.sprite = alive;
 		lc = GameObject.FindObjectOfType<LifeCount> ();
+		gameObject.tag = lc.gameLives.ToString ();
+		awake = true;
 	}
 	
 	// Update is called once per frame
@@ -52,7 +54,7 @@ public class Player2 : MonoBehaviour
 	{
 		rb.gravityScale = gravity;
 		if (awake == true) {
-			rb.isKinematic = false;
+			//rb.isKinematic = false;
 			if (onFloor) {
 				if (Input.GetKeyDown (KeyCode.R)) {
 					StartCoroutine (Restart ());
@@ -62,7 +64,7 @@ public class Player2 : MonoBehaviour
 				jumpFlag = true;
 			}
 		} else {
-			rb.isKinematic = true;
+			//rb.isKinematic = true;
 		}
 	}
 
@@ -112,11 +114,29 @@ public class Player2 : MonoBehaviour
 	{
 		awake = false;
 		rb.velocity = new Vector2 (0, 0);
-		sr.sprite = dead;
+		sr.sprite = dead;	
+		DestroyCorpses ();
 		yield return new WaitForSeconds (respawnTime);
 		gameObject.layer = 9;
 		Instantiate (clone, originalLoc, Quaternion.identity);
 		lc.IncreaseLives ();
 	}
 
+	public void RestartFromOutside ()
+	{
+		StartCoroutine (Restart ());
+	}
+
+	void DestroyCorpses ()
+	{
+		if (gameObject.tag == "3") {
+			Destroy (GameObject.FindGameObjectWithTag ("0"));
+		} else if (gameObject.tag == "0") {
+			Destroy (GameObject.FindGameObjectWithTag ("1"));
+		} else if (gameObject.tag == "1") {
+			Destroy (GameObject.FindGameObjectWithTag ("2"));
+		} else if (gameObject.tag == "2") {
+			Destroy (GameObject.FindGameObjectWithTag ("3"));
+		}
+	}
 }
