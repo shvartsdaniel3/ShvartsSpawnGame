@@ -18,13 +18,14 @@ public class Enemy : MonoBehaviour
 	LineOfSight sight;
 	LineOfSight[] enemyColliders;
 	LifeCount lc;
-	bool sightDirection;
+	SpriteRenderer sr;
+	public Sprite alert;
+	public Sprite idles;
 
 	// Use this for initialization
 	void Start ()
 	{
-		sightDirection = true;
-		//true is right, false is left
+		//gameObject.layer = 8;
 		idle = true;
 		lc = GameObject.FindObjectOfType<LifeCount> ();
 		rb = GetComponent<Rigidbody2D> ();
@@ -37,14 +38,18 @@ public class Enemy : MonoBehaviour
 				sight = i;
 			}
 		}
+		sr = GetComponent<SpriteRenderer> ();
 	}
 
 	void Update ()
 	{
 		if (sight.playerLives) {
+			//idle = false;
+			StartCoroutine ("Wait");
 			sight.playerLives = false;
-			print ("detecting life");
 			//StopCoroutine ("Patrol");
+		} else if (sight.playerDies) {
+			print ("dead");
 		}
 	}
 
@@ -73,6 +78,13 @@ public class Enemy : MonoBehaviour
 		}
 		moving = false;
 		yield return new WaitForSeconds (waitTime);
+	}
+
+	IEnumerator Wait ()
+	{
+		sr.sprite = alert;
+		yield return new WaitForSeconds (waitTime);
+		sr.sprite = idles;
 	}
 
 	void MoveEnemy (float x, Vector2 pos)

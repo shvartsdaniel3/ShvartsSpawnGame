@@ -84,7 +84,7 @@ public class Player2 : MonoBehaviour
 
 	void FixedUpdate ()
 	{
-		Physics2D.IgnoreLayerCollision (8, 9, true);
+		Physics2D.IgnoreLayerCollision (8, 13, true);
 		if (awake == true) {
 			if (jumpFlag && onFloor) {
 				rb.AddForce (Vector2.up * jumpForce, ForceMode2D.Impulse);
@@ -115,9 +115,10 @@ public class Player2 : MonoBehaviour
 		awake = false;
 		rb.velocity = new Vector2 (0, 0);
 		sr.sprite = dead;	
+
 		DestroyCorpses ();
 		yield return new WaitForSeconds (respawnTime);
-		gameObject.layer = 9;
+		gameObject.layer = 13;
 		Instantiate (clone, originalLoc, Quaternion.identity);
 		lc.IncreaseLives ();
 	}

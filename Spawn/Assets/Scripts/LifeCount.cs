@@ -14,16 +14,14 @@ public class LifeCount : MonoBehaviour
 	void Start ()
 	{
 		lives = GetComponent<Text> ();
-		lives.text = "0/3";
+		lives.text = "Lives Used: 0";
 		enemy = 5;
 	}
 
 	public void IncreaseLives ()
 	{
 		numLife += 1;
-		if (numLife <= 3) {
-			lives.text = numLife.ToString () + "/3";
-		}
+		lives.text = "Lives Used: " + numLife.ToString ();
 		if (gameLives <= 2) {
 			gameLives += 1;
 		} else {
