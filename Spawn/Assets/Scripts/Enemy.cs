@@ -15,46 +15,49 @@ public class Enemy : MonoBehaviour
 	public float floorDrag;
 	float originalDistance;
 	bool moving = false;
-	LineOfSight sight;
-	LineOfSight[] enemyColliders;
-	LifeCount lc;
 	SpriteRenderer sr;
 	public Sprite alert;
 	public Sprite idles;
+	public Transform sightStart, sightEnd;
+	public bool spottedAlive = false;
+	public bool spottedDead = false;
+	LineRenderer lr;
 
 	// Use this for initialization
 	void Start ()
 	{
+		lr = GetComponent<LineRenderer> ();
 		//gameObject.layer = 8;
 		idle = true;
-		lc = GameObject.FindObjectOfType<LifeCount> ();
 		rb = GetComponent<Rigidbody2D> ();
 		startPosition = transform.position.x;
 		distance = endPosition - startPosition;
 		originalDistance = distance;
-		enemyColliders = GameObject.FindObjectsOfType<LineOfSight> ();
-		foreach (LineOfSight i in enemyColliders) {
-			if (i.tag == lc.enemy.ToString ()) {
-				sight = i;
-			}
-		}
 		sr = GetComponent<SpriteRenderer> ();
 	}
 
 	void Update ()
 	{
-		if (sight.playerLives) {
-			//idle = false;
+		if (spottedAlive) {
+			idle = false;
 			StartCoroutine ("Wait");
-			sight.playerLives = false;
-			//StopCoroutine ("Patrol");
-		} else if (sight.playerDies) {
-			print ("dead");
+		} else if (spottedDead) {
+			idle = false;
 		}
+	}
+
+	void RayCasting ()
+	{
+		Debug.DrawLine (sightStart.position, sightEnd.position, Color.green);
+		lr.SetPosition (0, sightStart.position);
+		lr.SetPosition (1, sightEnd.position);
+		spottedAlive = Physics2D.Linecast (sightStart.position, sightEnd.position, 1 << LayerMask.NameToLayer ("Player"));
+		spottedDead = Physics2D.Linecast (sightStart.position, sightEnd.position, 1 << LayerMask.NameToLayer ("Dead Players"));
 	}
 
 	void FixedUpdate ()
 	{
+		RayCasting ();
 		if (idle) {
 			if (moving == false) {
 				StartCoroutine ("Patrol");
@@ -66,14 +69,15 @@ public class Enemy : MonoBehaviour
 	{
 		moving = true;
 		if (distance >= 0) {
+			sightEnd.transform.localPosition = new Vector2 (20, 0);
 			MoveEnemy (speed, Vector2.left);
 			distance = endPosition - transform.position.x;
 			yield return new WaitForSeconds (waitTime);
-			sight.transform.position = new Vector2 (sight.transform.position.x - 5, sight.transform.position.y);
+			sightEnd.transform.localPosition = new Vector2 (-20, 0);
 			MoveEnemy (-speed, Vector2.right);
 			distance = endPosition - transform.position.x;
 			yield return new WaitForSeconds (waitTime);
-			sight.transform.position = new Vector2 (sight.transform.position.x + 5, sight.transform.position.y);
+			sightEnd.transform.localPosition = new Vector2 (20, 0);
 			distance = originalDistance;
 		}
 		moving = false;
@@ -90,7 +94,6 @@ public class Enemy : MonoBehaviour
 	void MoveEnemy (float x, Vector2 pos)
 	{
 		rb.velocity = new Vector2 (x, rb.velocity.y);
-		//rb.AddForce (pos * floorDrag * Mathf.Sign (rb.velocity.x) * Mathf.Pow (rb.velocity.x, 2));
 	}
 
 }

@@ -9,13 +9,11 @@ public class LifeCount : MonoBehaviour
 	public int numLife = 0;
 	Text lives;
 	public int gameLives = 0;
-	public int enemy;
 
 	void Start ()
 	{
 		lives = GetComponent<Text> ();
 		lives.text = "Lives Used: 0";
-		enemy = 5;
 	}
 
 	public void IncreaseLives ()

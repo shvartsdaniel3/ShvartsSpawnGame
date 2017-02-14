@@ -15,36 +15,38 @@ public class LineOfSight : MonoBehaviour
 	void Start ()
 	{
 		lc = GameObject.FindObjectOfType<LifeCount> ();
-		lc.enemy = lc.enemy + 1;
-		gameObject.tag = lc.enemy.ToString ();
+//		lc.enemy = lc.enemy + 1;
+//		gameObject.tag = lc.enemy.ToString ();
 		sr = GetComponent<SpriteRenderer> ();
 		shrinking = false;
 	}
 
-	//void OnTriggerStay2D (Collider2D other)
-	//{
-	//	shrinking = true;
-	//}
+	void OnTriggerStay2D (Collider2D other)
+	{
+		if (other.gameObject.tag == "0" || other.gameObject.tag == "1" || other.gameObject.tag == "2" || other.gameObject.tag == "3") {
+			shrinking = true;
+		}
+	}
 
-	//void OnTriggerStay2D (Collider2D col)
-	//{
-	//	shrinking = false;
-	//}
+	void OnTriggerExit2D (Collider2D col)
+	{
+		if (col.gameObject.tag == "0" || col.gameObject.tag == "1" || col.gameObject.tag == "2" || col.gameObject.tag == "3") {
+			shrinking = false;
+		}
+	}
 
-	//void Update ()
-	//{
-	//	if (shrinking = true) {
-	//		if (transform.localScale.x >= 0) {
-	//			transform.localScale = new Vector2 (transform.localScale.x - subamount, 1);
-	//	print (transform.localScale);
-	//		}
-	//	} else if (shrinking = false) {
-	//		if (transform.localScale.x <= 1) {
-	//			transform.localScale = new Vector2 (transform.localScale.x + subamount, 1);
-	//			print (transform.localScale);
-	//		}
-	//	}
-	//}
+	void Update ()
+	{
+		if (shrinking = true) {
+			if (transform.localScale.x >= 0) {
+				transform.localScale = new Vector2 (transform.localScale.x - subamount, 1);
+			}
+		} //else if (shrinking = false) {
+		//if (transform.localScale.x <= 1) {
+		//	transform.localScale = new Vector2 (transform.localScale.x + subamount, 1);
+		//}
+		//}
+	}
 
 	void OnTriggerEnter2D (Collider2D collision)
 	{	
@@ -58,10 +60,8 @@ public class LineOfSight : MonoBehaviour
 			} else {
 				print ("player is neither dead nor alive???");
 			}
-		} //else {
-		//playerLives = false;
-		//playerDies = false;
-		//}
+		}
+
 	}
 
 
