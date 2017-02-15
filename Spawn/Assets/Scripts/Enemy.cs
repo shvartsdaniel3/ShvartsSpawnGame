@@ -19,14 +19,23 @@ public class Enemy : MonoBehaviour
 	public Sprite alert;
 	public Sprite idles;
 	public Transform sightStart, sightEnd;
+	Transform originalEnd;
 	public bool spottedAlive = false;
 	public bool spottedDead = false;
-	LineRenderer lr;
+	//LineRenderer lr;
+	GameObject player;
+	GameObject altPlayer;
+	bool firstPlayer = false;
+	float playerDistance;
+	Player2 p2;
+	bool movingToCorpse;
+	GameObject corpse;
 
 	// Use this for initialization
 	void Start ()
 	{
-		lr = GetComponent<LineRenderer> ();
+		originalEnd = sightEnd;
+		//lr = GetComponent<LineRenderer> ();
 		//gameObject.layer = 8;
 		idle = true;
 		rb = GetComponent<Rigidbody2D> ();
@@ -38,22 +47,28 @@ public class Enemy : MonoBehaviour
 
 	void Update ()
 	{
-		if (spottedAlive) {
-			idle = false;
-			StartCoroutine ("Wait");
-		} else if (spottedDead) {
-			idle = false;
-		}
 	}
 
 	void RayCasting ()
 	{
-		Debug.DrawLine (sightStart.position, sightEnd.position, Color.green);
-		lr.SetPosition (0, sightStart.position);
-		lr.SetPosition (1, sightEnd.position);
-		spottedAlive = Physics2D.Linecast (sightStart.position, sightEnd.position, 1 << LayerMask.NameToLayer ("Player"));
-		spottedDead = Physics2D.Linecast (sightStart.position, sightEnd.position, 1 << LayerMask.NameToLayer ("Dead Players"));
+		Debug.DrawRay (sightStart.position, (sightEnd.position - sightStart.position).normalized, Color.green);
+		RaycastHit2D ray = Physics2D.Raycast (sightStart.position, (sightEnd.position - sightStart.position).normalized, 999, LayerMask.GetMask ("Player", "Dead Players"));
+		if (ray && ray.collider.gameObject.layer == 8) {
+			KillPlayer ();
+		}
+		ray = Physics2D.Linecast (sightStart.position, sightEnd.position, 1 << LayerMask.NameToLayer ("Dead Players"));
+		if (ray && ray.collider.gameObject.layer == 13) {
+			movingToCorpse = true;
+			corpse = ray.collider.gameObject;
+		}
 	}
+
+	void KillPlayer ()
+	{
+		Global.me.player.SendMessage ("Restart", null);
+	}
+
+
 
 	void FixedUpdate ()
 	{
@@ -62,6 +77,11 @@ public class Enemy : MonoBehaviour
 			if (moving == false) {
 				StartCoroutine ("Patrol");
 			}
+		}
+		if (movingToCorpse) {
+			
+		} else {
+			sr.sprite = idles;
 		}
 	}
 

@@ -34,6 +34,7 @@ public class Player2 : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		Global.me.player = gameObject;
 		rb = GetComponent<Rigidbody2D> ();
 		jump = KeyCode.Space;
 		left = KeyCode.A;
