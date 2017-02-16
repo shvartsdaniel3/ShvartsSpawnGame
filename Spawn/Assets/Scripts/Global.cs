@@ -6,7 +6,8 @@ public class Global : MonoBehaviourSingleton<Global>
 {
 
 	public static Global me;
-	public GameObject player;
+	public Player2 player;
+	public int timesCast = 0;
 
 	// Use this for initialization
 

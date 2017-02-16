@@ -30,6 +30,7 @@ public class Enemy : MonoBehaviour
 	Player2 p2;
 	bool movingToCorpse;
 	GameObject corpse;
+	public float floorForce;
 
 	// Use this for initialization
 	void Start ()
@@ -65,9 +66,12 @@ public class Enemy : MonoBehaviour
 
 	void KillPlayer ()
 	{
-		Global.me.player.SendMessage ("Restart", null);
+		StartCoroutine ("Wait");
+		if (Global.me.timesCast == 0) {
+			Global.me.timesCast += 1;
+			Global.me.player.RestartFromOutside ();
+		}
 	}
-
 
 
 	void FixedUpdate ()
@@ -79,11 +83,21 @@ public class Enemy : MonoBehaviour
 			}
 		}
 		if (movingToCorpse) {
-			
-		} else {
-			sr.sprite = idles;
+			StartCoroutine ("Wait");
+			Vector3 dir = corpse.transform.position - transform.position;
+			if (transform.position.x * (-dir.normalized.x) <= ((corpse.transform.position.x + 1.2f) * (-dir.normalized.x))) {
+				rb.velocity = new Vector2 (0, 0);
+				StartCoroutine ("WaitForCorpse");
+				idle = true;
+				movingToCorpse = false;
+			} else {
+				idle = false;
+				rb.AddForce (dir.normalized * floorForce * 0.05f);
+				//rb.AddForce (-dir.normalized * floorDrag * Mathf.Sign (rb.velocity.x) * Mathf.Pow (rb.velocity.x, 2));
+			}
 		}
 	}
+
 
 	IEnumerator Patrol ()
 	{
@@ -107,13 +121,21 @@ public class Enemy : MonoBehaviour
 	IEnumerator Wait ()
 	{
 		sr.sprite = alert;
-		yield return new WaitForSeconds (waitTime);
+		yield return new WaitForSeconds (waitTime - 2);
 		sr.sprite = idles;
+	}
+
+	IEnumerator WaitForCorpse ()
+	{
+		yield return new WaitForSeconds (waitTime - 3);
+		Destroy (corpse);
 	}
 
 	void MoveEnemy (float x, Vector2 pos)
 	{
-		rb.velocity = new Vector2 (x, rb.velocity.y);
+		rb.AddForce (Vector2.right * floorForce * x);
+		rb.AddForce (Vector2.left * floorDrag * Mathf.Sign (rb.velocity.x) * Mathf.Pow (rb.velocity.x, 2));
+		//rb.velocity = new Vector2 (x, rb.velocity.y);
 	}
 
 }

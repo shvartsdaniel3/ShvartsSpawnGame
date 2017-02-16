@@ -34,7 +34,7 @@ public class Player2 : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		Global.me.player = gameObject;
+		Global.me.player = this;
 		rb = GetComponent<Rigidbody2D> ();
 		jump = KeyCode.Space;
 		left = KeyCode.A;
@@ -55,7 +55,6 @@ public class Player2 : MonoBehaviour
 	{
 		rb.gravityScale = gravity;
 		if (awake == true) {
-			//rb.isKinematic = false;
 			if (onFloor) {
 				if (Input.GetKeyDown (KeyCode.R)) {
 					StartCoroutine (Restart ());
@@ -65,7 +64,6 @@ public class Player2 : MonoBehaviour
 				jumpFlag = true;
 			}
 		} else {
-			//rb.isKinematic = true;
 		}
 	}
 
@@ -116,12 +114,12 @@ public class Player2 : MonoBehaviour
 		awake = false;
 		rb.velocity = new Vector2 (0, 0);
 		sr.sprite = dead;	
-
 		DestroyCorpses ();
 		yield return new WaitForSeconds (respawnTime);
 		gameObject.layer = 13;
 		Instantiate (clone, originalLoc, Quaternion.identity);
 		lc.IncreaseLives ();
+		Global.me.timesCast = 0;
 	}
 
 	public void RestartFromOutside ()
