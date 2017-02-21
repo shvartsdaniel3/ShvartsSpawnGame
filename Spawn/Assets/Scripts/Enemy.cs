@@ -19,25 +19,14 @@ public class Enemy : MonoBehaviour
 	public Sprite alert;
 	public Sprite idles;
 	public Transform sightStart, sightEnd;
-	Transform originalEnd;
-	public bool spottedAlive = false;
-	public bool spottedDead = false;
-	//LineRenderer lr;
-	GameObject player;
-	GameObject altPlayer;
-	bool firstPlayer = false;
-	float playerDistance;
-	Player2 p2;
 	bool movingToCorpse;
 	GameObject corpse;
+	GameObject player;
 	public float floorForce;
+	public GameObject bullet;
 
-	// Use this for initialization
 	void Start ()
 	{
-		originalEnd = sightEnd;
-		//lr = GetComponent<LineRenderer> ();
-		//gameObject.layer = 8;
 		idle = true;
 		rb = GetComponent<Rigidbody2D> ();
 		startPosition = transform.position.x;
@@ -46,15 +35,12 @@ public class Enemy : MonoBehaviour
 		sr = GetComponent<SpriteRenderer> ();
 	}
 
-	void Update ()
-	{
-	}
-
 	void RayCasting ()
 	{
 		Debug.DrawRay (sightStart.position, (sightEnd.position - sightStart.position).normalized, Color.green);
 		RaycastHit2D ray = Physics2D.Raycast (sightStart.position, (sightEnd.position - sightStart.position).normalized, 999, LayerMask.GetMask ("Player", "Dead Players"));
 		if (ray && ray.collider.gameObject.layer == 8) {
+			player = ray.collider.gameObject;
 			KillPlayer ();
 		}
 		ray = Physics2D.Linecast (sightStart.position, sightEnd.position, 1 << LayerMask.NameToLayer ("Dead Players"));
@@ -84,16 +70,15 @@ public class Enemy : MonoBehaviour
 		}
 		if (movingToCorpse) {
 			StartCoroutine ("Wait");
-			Vector3 dir = corpse.transform.position - transform.position;
-			if (transform.position.x * (-dir.normalized.x) <= ((corpse.transform.position.x + 1.2f) * (-dir.normalized.x))) {
+			Vector2 dir = new Vector2 ((Mathf.Abs (transform.position.x - corpse.transform.position.x)), 0);
+			if (dir.x < 1.3) {
 				rb.velocity = new Vector2 (0, 0);
 				StartCoroutine ("WaitForCorpse");
 				idle = true;
 				movingToCorpse = false;
 			} else {
 				idle = false;
-				rb.AddForce (dir.normalized * floorForce * 0.05f);
-				//rb.AddForce (-dir.normalized * floorDrag * Mathf.Sign (rb.velocity.x) * Mathf.Pow (rb.velocity.x, 2));
+				rb.AddForce (corpse.transform.position.normalized * floorForce * 0.05f);
 			}
 		}
 	}
@@ -135,7 +120,6 @@ public class Enemy : MonoBehaviour
 	{
 		rb.AddForce (Vector2.right * floorForce * x);
 		rb.AddForce (Vector2.left * floorDrag * Mathf.Sign (rb.velocity.x) * Mathf.Pow (rb.velocity.x, 2));
-		//rb.velocity = new Vector2 (x, rb.velocity.y);
 	}
 
 }

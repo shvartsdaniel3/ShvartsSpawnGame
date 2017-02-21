@@ -30,8 +30,8 @@ public class Player2 : MonoBehaviour
 	public bool awake = true;
 	IEnumerator coroutine;
 	SpriteRenderer sr;
+	bool spawning = false;
 
-	// Use this for initialization
 	void Start ()
 	{
 		Global.me.player = this;
@@ -49,8 +49,7 @@ public class Player2 : MonoBehaviour
 		gameObject.tag = lc.gameLives.ToString ();
 		awake = true;
 	}
-	
-	// Update is called once per frame
+
 	void Update ()
 	{
 		rb.gravityScale = gravity;
@@ -111,15 +110,19 @@ public class Player2 : MonoBehaviour
 
 	private IEnumerator Restart ()
 	{
-		awake = false;
-		rb.velocity = new Vector2 (0, 0);
-		sr.sprite = dead;	
-		DestroyCorpses ();
-		yield return new WaitForSeconds (respawnTime);
-		gameObject.layer = 13;
-		Instantiate (clone, originalLoc, Quaternion.identity);
-		lc.IncreaseLives ();
-		Global.me.timesCast = 0;
+		if (spawning == false) {
+			spawning = true;
+			awake = false;
+			rb.velocity = new Vector2 (0, 0);
+			sr.sprite = dead;	
+			DestroyCorpses ();
+			yield return new WaitForSeconds (respawnTime);
+			gameObject.layer = 13;
+			Instantiate (clone, originalLoc, Quaternion.identity);
+			lc.IncreaseLives ();
+			Global.me.timesCast = 0;
+			spawning = false;
+		}
 	}
 
 	public void RestartFromOutside ()
