@@ -9,9 +9,6 @@ public class Enemy : MonoBehaviour
 	bool idle;
 	public float speed;
 	public float waitTime;
-	float startPosition;
-	public float endPosition;
-	float distance;
 	public float floorDrag;
 	float originalDistance;
 	bool moving = false;
@@ -24,14 +21,12 @@ public class Enemy : MonoBehaviour
 	GameObject player;
 	public float floorForce;
 	public GameObject bullet;
+	bool waitingForCorpse = false;
 
 	void Start ()
 	{
 		idle = true;
 		rb = GetComponent<Rigidbody2D> ();
-		startPosition = transform.position.x;
-		distance = endPosition - startPosition;
-		originalDistance = distance;
 		sr = GetComponent<SpriteRenderer> ();
 	}
 
@@ -45,9 +40,12 @@ public class Enemy : MonoBehaviour
 		}
 		ray = Physics2D.Linecast (sightStart.position, sightEnd.position, 1 << LayerMask.NameToLayer ("Dead Players"));
 		if (ray && ray.collider.gameObject.layer == 13) {
-			movingToCorpse = true;
-			corpse = ray.collider.gameObject;
+			if (corpse != ray.collider.gameObject) {
+				movingToCorpse = true;
+				corpse = ray.collider.gameObject;
+			}
 		}
+
 	}
 
 	void KillPlayer ()
@@ -63,22 +61,24 @@ public class Enemy : MonoBehaviour
 	void FixedUpdate ()
 	{
 		RayCasting ();
+
 		if (idle) {
 			if (moving == false) {
 				StartCoroutine ("Patrol");
 			}
 		}
+
 		if (movingToCorpse) {
-			StartCoroutine ("Wait");
-			Vector2 dir = new Vector2 ((Mathf.Abs (transform.position.x - corpse.transform.position.x)), 0);
-			if (dir.x < 1.3) {
+			StopCoroutine ("Patrol");
+			moving = false;
+			sr.sprite = alert;
+			Vector2 dir = transform.position - corpse.transform.position;
+			if (Mathf.Abs (dir.x) < 1.3 && waitingForCorpse == false) {
 				rb.velocity = new Vector2 (0, 0);
 				StartCoroutine ("WaitForCorpse");
-				idle = true;
-				movingToCorpse = false;
 			} else {
 				idle = false;
-				rb.AddForce (corpse.transform.position.normalized * floorForce * 0.05f);
+				rb.AddForce (-dir.normalized * floorForce * 0.05f);
 			}
 		}
 	}
@@ -87,20 +87,13 @@ public class Enemy : MonoBehaviour
 	IEnumerator Patrol ()
 	{
 		moving = true;
-		if (distance >= 0) {
-			sightEnd.transform.localPosition = new Vector2 (20, 0);
-			MoveEnemy (speed, Vector2.left);
-			distance = endPosition - transform.position.x;
-			yield return new WaitForSeconds (waitTime);
-			sightEnd.transform.localPosition = new Vector2 (-20, 0);
-			MoveEnemy (-speed, Vector2.right);
-			distance = endPosition - transform.position.x;
-			yield return new WaitForSeconds (waitTime);
-			sightEnd.transform.localPosition = new Vector2 (20, 0);
-			distance = originalDistance;
-		}
-		moving = false;
 		yield return new WaitForSeconds (waitTime);
+		sightEnd.transform.localPosition = new Vector2 (20, 0);
+		MoveEnemy (speed, Vector2.left);
+		yield return new WaitForSeconds (waitTime);
+		sightEnd.transform.localPosition = new Vector2 (-20, 0);
+		MoveEnemy (-speed, Vector2.right);
+		moving = false;
 	}
 
 	IEnumerator Wait ()
@@ -112,8 +105,13 @@ public class Enemy : MonoBehaviour
 
 	IEnumerator WaitForCorpse ()
 	{
+		movingToCorpse = false;
+		waitingForCorpse = true;
 		yield return new WaitForSeconds (waitTime - 3);
 		Destroy (corpse);
+		idle = true;
+		sr.sprite = idles;
+		waitingForCorpse = false;
 	}
 
 	void MoveEnemy (float x, Vector2 pos)
