@@ -15,6 +15,7 @@ public class Bullet : MonoBehaviour
 
 	void Update ()
 	{
+		
 		transform.position = new Vector2 (transform.position.x - speed, transform.position.y);
 	}
 

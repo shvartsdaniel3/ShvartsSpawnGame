@@ -14,8 +14,11 @@ public class Player2 : MonoBehaviour
 	public float jumpAggro;
 	public GameObject clone;
 	public float respawnTime;
-	public Sprite dead;
+	//public Sprite dead;
 	public Sprite alive;
+	public Sprite d1;
+	public Sprite d2;
+	public Sprite d3;
 	Rigidbody2D rb;
 	bool jumpFlag;
 	bool onFloor;
@@ -31,6 +34,7 @@ public class Player2 : MonoBehaviour
 	IEnumerator coroutine;
 	SpriteRenderer sr;
 	bool spawning = false;
+	int curLives;
 
 	void Start ()
 	{
@@ -46,8 +50,10 @@ public class Player2 : MonoBehaviour
 		sr = gameObject.GetComponent <SpriteRenderer> ();
 		sr.sprite = alive;
 		lc = GameObject.FindObjectOfType<LifeCount> ();
-		gameObject.tag = lc.gameLives.ToString ();
+		gameObject.tag = 
+		lc.gameLives.ToString ();
 		awake = true;
+		curLives = lc.numLife;
 	}
 
 	void Update ()
@@ -62,7 +68,17 @@ public class Player2 : MonoBehaviour
 			if (Input.GetKeyDown (KeyCode.Space)) {
 				jumpFlag = true;
 			}
-		} else {
+		}
+	
+		if (lc.numLife == curLives + 1) {
+			curLives = lc.numLife;
+			if (sr.sprite == alive) {
+				sr.sprite = d1;
+			} else if (sr.sprite == d1) {
+				sr.sprite = d2;
+			} else if (sr.sprite == d2) {
+				sr.sprite = d3;
+			}
 		}
 	}
 
@@ -114,7 +130,7 @@ public class Player2 : MonoBehaviour
 			spawning = true;
 			awake = false;
 			rb.velocity = new Vector2 (0, 0);
-			sr.sprite = dead;	
+			//sr.sprite = dead;	
 			DestroyCorpses ();
 			yield return new WaitForSeconds (respawnTime);
 			gameObject.layer = 13;

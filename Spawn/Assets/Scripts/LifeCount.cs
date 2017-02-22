@@ -12,6 +12,7 @@ public class LifeCount : MonoBehaviour
 
 	void Start ()
 	{
+
 		lives = GetComponent<Text> ();
 		lives.text = "Lives Used: 0";
 	}

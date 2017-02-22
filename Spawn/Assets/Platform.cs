@@ -19,8 +19,6 @@ public class Platform : MonoBehaviour
 	{
 		if (s.pressed == true) {
 			if (transform.position.y < maxHeight) {
-				print (transform.position.y.ToString ());
-				print ((maxHeight.ToString ()));
 				transform.position = new Vector2 (transform.position.x, transform.position.y + growSpeed);
 			}
 		} else {

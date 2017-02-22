@@ -33,18 +33,19 @@ public class Enemy : MonoBehaviour
 	void RayCasting ()
 	{
 		Debug.DrawRay (sightStart.position, (sightEnd.position - sightStart.position).normalized, Color.green);
-		RaycastHit2D ray = Physics2D.Raycast (sightStart.position, (sightEnd.position - sightStart.position).normalized, 999, LayerMask.GetMask ("Player", "Dead Players"));
+		RaycastHit2D ray = Physics2D.Raycast (sightStart.position, (sightEnd.position - sightStart.position).normalized, 999, LayerMask.GetMask ("Player", "Dead Players", "Wall"));
 		if (ray && ray.collider.gameObject.layer == 8) {
 			player = ray.collider.gameObject;
 			KillPlayer ();
 		}
-		ray = Physics2D.Linecast (sightStart.position, sightEnd.position, 1 << LayerMask.NameToLayer ("Dead Players"));
+		//ray = Physics2D.Linecast (sightStart.position, sightEnd.position, 1 << LayerMask.NameToLayer ("Dead Players"));
 		if (ray && ray.collider.gameObject.layer == 13) {
 			if (corpse != ray.collider.gameObject) {
 				movingToCorpse = true;
 				corpse = ray.collider.gameObject;
 			}
 		}
+
 
 	}
 

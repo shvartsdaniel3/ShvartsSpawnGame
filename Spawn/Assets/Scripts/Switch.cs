@@ -14,9 +14,10 @@ public class Switch : MonoBehaviour
 		pressedPos = new Vector2 (transform.position.x, transform.position.y - 0.25f);
 	}
 
+
 	void OnTriggerEnter2D (Collider2D collision)
 	{
-		if (collision.gameObject.tag == "0" || collision.gameObject.tag == "1" || collision.gameObject.tag == "2" || collision.gameObject.tag == "3") {
+		if (collision.gameObject.tag == "0" || collision.gameObject.tag == "1" || collision.gameObject.tag == "2" || collision.gameObject.tag == "3" || collision.gameObject.tag == "Enemy") {
 			transform.position = pressedPos;
 			pressed = true;
 		}
@@ -24,7 +25,7 @@ public class Switch : MonoBehaviour
 
 	void OnTriggerExit2D (Collider2D collision)
 	{
-		if (collision.gameObject.tag == "0" || collision.gameObject.tag == "1" || collision.gameObject.tag == "2" || collision.gameObject.tag == "3") {
+		if (collision.gameObject.tag == "0" || collision.gameObject.tag == "1" || collision.gameObject.tag == "2" || collision.gameObject.tag == "3" || collision.gameObject.tag == "Enemy") {
 			transform.position = OriginalPos;
 			pressed = false;
 		}
