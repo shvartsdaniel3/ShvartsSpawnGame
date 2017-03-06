@@ -8,22 +8,38 @@ public class Platform : MonoBehaviour
 	public float maxHeight;
 	public float growSpeed;
 	Vector2 originalPos;
+	public bool down;
 
 	void Start ()
 	{
 		originalPos = transform.position;
 		s = gameObject.GetComponentInParent (typeof(Switch)) as Switch;
+		if (down) {
+			growSpeed = -growSpeed;
+		}
 	}
 
 	void Update ()
 	{
 		if (s.pressed == true) {
-			if (transform.position.y < maxHeight) {
-				transform.position = new Vector2 (transform.position.x, transform.position.y + growSpeed);
+			if (down) {
+				if (transform.position.y > maxHeight) {
+					transform.position = new Vector2 (transform.position.x, transform.position.y + growSpeed);
+				}
+			} else {
+				if (transform.position.y < maxHeight) {
+					transform.position = new Vector2 (transform.position.x, transform.position.y + growSpeed);
+				}
 			}
 		} else {
-			if (transform.position.y > originalPos.y) {
-				transform.position = new Vector2 (transform.position.x, transform.position.y - growSpeed);
+			if (down) {
+				if (transform.position.y < originalPos.y) {
+					transform.position = new Vector2 (transform.position.x, transform.position.y - growSpeed);
+				}
+			} else {
+				if (transform.position.y > originalPos.y) {
+					transform.position = new Vector2 (transform.position.x, transform.position.y - growSpeed);
+				}
 			}
 		}
 	}

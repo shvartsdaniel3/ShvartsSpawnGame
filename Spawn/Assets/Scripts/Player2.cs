@@ -35,9 +35,12 @@ public class Player2 : MonoBehaviour
 	SpriteRenderer sr;
 	bool spawning = false;
 	int curLives;
+	GameObject child;
 
 	void Start ()
 	{
+		child = gameObject.transform.GetChild (0).gameObject;
+		child.SetActive (false);
 		Global.me.player = this;
 		rb = GetComponent<Rigidbody2D> ();
 		jump = KeyCode.Space;
@@ -84,15 +87,19 @@ public class Player2 : MonoBehaviour
 
 	void OnTriggerEnter2D (Collider2D collision)
 	{
-		onFloor = true;
-		floorObjs++;
+		if (collision.gameObject.tag == "floor") {
+			onFloor = true;
+			floorObjs++;
+		}
 	}
 
 	void OnTriggerExit2D (Collider2D collision)
 	{
-		floorObjs--;
-		if (floorObjs <= 0) {
-			onFloor = false;
+		if (collision.gameObject.tag == "floor") {
+			floorObjs--;
+			if (floorObjs <= 0) {
+				onFloor = false;
+			}
 		}
 	}
 
@@ -132,10 +139,11 @@ public class Player2 : MonoBehaviour
 			rb.velocity = new Vector2 (0, 0);
 			//sr.sprite = dead;	
 			DestroyCorpses ();
+			lc.IncreaseLives ();
 			yield return new WaitForSeconds (respawnTime);
 			gameObject.layer = 13;
+			child.SetActive (true);
 			Instantiate (clone, originalLoc, Quaternion.identity);
-			lc.IncreaseLives ();
 			Global.me.timesCast = 0;
 			spawning = false;
 		}

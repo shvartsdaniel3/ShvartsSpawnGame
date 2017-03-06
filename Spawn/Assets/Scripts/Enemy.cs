@@ -22,6 +22,7 @@ public class Enemy : MonoBehaviour
 	public float floorForce;
 	public GameObject bullet;
 	bool waitingForCorpse = false;
+	bool hitting = false;
 
 	void Start ()
 	{
@@ -33,16 +34,24 @@ public class Enemy : MonoBehaviour
 	void RayCasting ()
 	{
 		Debug.DrawRay (sightStart.position, (sightEnd.position - sightStart.position).normalized, Color.green);
-		RaycastHit2D ray = Physics2D.Raycast (sightStart.position, (sightEnd.position - sightStart.position).normalized, 999, LayerMask.GetMask ("Player", "Dead Players", "Wall"));
+		RaycastHit2D ray = Physics2D.Raycast (sightStart.position, (sightEnd.position - sightStart.position).normalized, 999, LayerMask.GetMask ("Player", "Dead Players", "Wall", "Star Zone"));
 		if (ray && ray.collider.gameObject.layer == 8) {
 			player = ray.collider.gameObject;
 			KillPlayer ();
 		}
 		//ray = Physics2D.Linecast (sightStart.position, sightEnd.position, 1 << LayerMask.NameToLayer ("Dead Players"));
 		if (ray && ray.collider.gameObject.layer == 13) {
-			if (corpse != ray.collider.gameObject) {
+			if (corpse != ray.collider.gameObject || hitting == false) {
+				hitting = true;
 				movingToCorpse = true;
 				corpse = ray.collider.gameObject;
+			}
+		} else {
+			if (hitting) {
+				hitting = false;
+				movingToCorpse = false;
+				idle = true;
+				sr.sprite = idles;
 			}
 		}
 
@@ -74,11 +83,11 @@ public class Enemy : MonoBehaviour
 			moving = false;
 			sr.sprite = alert;
 			Vector2 dir = transform.position - corpse.transform.position;
+			idle = false;
 			if (Mathf.Abs (dir.x) < 1.3 && waitingForCorpse == false) {
 				rb.velocity = new Vector2 (0, 0);
 				StartCoroutine ("WaitForCorpse");
 			} else {
-				idle = false;
 				rb.AddForce (-dir.normalized * floorForce * 0.05f);
 			}
 		}
@@ -120,5 +129,4 @@ public class Enemy : MonoBehaviour
 		rb.AddForce (Vector2.right * floorForce * x);
 		rb.AddForce (Vector2.left * floorDrag * Mathf.Sign (rb.velocity.x) * Mathf.Pow (rb.velocity.x, 2));
 	}
-
 }
