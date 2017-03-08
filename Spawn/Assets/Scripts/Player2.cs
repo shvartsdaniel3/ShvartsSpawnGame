@@ -14,7 +14,6 @@ public class Player2 : MonoBehaviour
 	public float jumpAggro;
 	public GameObject clone;
 	public float respawnTime;
-	//public Sprite dead;
 	public Sprite alive;
 	public Sprite d1;
 	public Sprite d2;
@@ -137,11 +136,10 @@ public class Player2 : MonoBehaviour
 			spawning = true;
 			awake = false;
 			rb.velocity = new Vector2 (0, 0);
-			//sr.sprite = dead;	
+			gameObject.layer = 13;
 			DestroyCorpses ();
 			lc.IncreaseLives ();
 			yield return new WaitForSeconds (respawnTime);
-			gameObject.layer = 13;
 			child.SetActive (true);
 			Instantiate (clone, originalLoc, Quaternion.identity);
 			Global.me.timesCast = 0;

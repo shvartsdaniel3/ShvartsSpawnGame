@@ -60,7 +60,8 @@ public class Enemy : MonoBehaviour
 
 	void KillPlayer ()
 	{
-		StartCoroutine ("Wait");
+		//StartCoroutine ("Wait");
+		sr.sprite = alert;
 		if (Global.me.timesCast == 0) {
 			Global.me.timesCast += 1;
 			Global.me.player.RestartFromOutside ();
@@ -88,7 +89,8 @@ public class Enemy : MonoBehaviour
 				rb.velocity = new Vector2 (0, 0);
 				StartCoroutine ("WaitForCorpse");
 			} else {
-				rb.AddForce (-dir.normalized * floorForce * 0.05f);
+				rb.velocity = (-dir.normalized * 3f);
+				//rb.AddForce (-dir.normalized * floorForce * 0.05f);
 			}
 		}
 	}
@@ -106,12 +108,6 @@ public class Enemy : MonoBehaviour
 		moving = false;
 	}
 
-	IEnumerator Wait ()
-	{
-		sr.sprite = alert;
-		yield return new WaitForSeconds (waitTime - 2);
-		sr.sprite = idles;
-	}
 
 	IEnumerator WaitForCorpse ()
 	{
