@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: fe2eba38b413200459cf9f91203e57be
+timeCreated: 1450139707
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - disperserManagerPrefab: {fileID: 152118, guid: 22a887d98bc95b84d85f1cbeb50cceac,
+      type: 2}
+  - parentSubmeshPrefab: {fileID: 100576, guid: 13d0541ed51508d4ca3d505c8c59695b,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

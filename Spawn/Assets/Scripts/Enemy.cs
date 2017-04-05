@@ -23,12 +23,16 @@ public class Enemy : MonoBehaviour
 	public GameObject bullet;
 	bool waitingForCorpse = false;
 	bool hitting = false;
+	Animator anm;
+	bool inAnim;
 
 	void Start ()
 	{
 		idle = true;
 		rb = GetComponent<Rigidbody2D> ();
 		sr = GetComponent<SpriteRenderer> ();
+		sr.flipX = true;
+		anm = gameObject.GetComponent <Animator> ();
 	}
 
 	void RayCasting ()
@@ -58,16 +62,33 @@ public class Enemy : MonoBehaviour
 
 	}
 
+	private IEnumerator Blink ()
+	{
+		inAnim = true;
+		//anm.SetBool ("Blink", false);
+		float timeNumber = Random.Range (0, 10);
+		yield return new WaitForSeconds (timeNumber);
+		anm.SetBool ("Blink", true);
+		inAnim = false;
+	}
+
 	void KillPlayer ()
 	{
 		//StartCoroutine ("Wait");
-		sr.sprite = alert;
+		anm.SetBool ("Transition", false);
+		anm.SetBool ("Alert", true);
 		if (Global.me.timesCast == 0) {
 			Global.me.timesCast += 1;
 			Global.me.player.RestartFromOutside ();
 		}
 	}
 
+	void Update ()
+	{
+		if (!movingToCorpse & !inAnim) {
+			StartCoroutine (Blink ());
+		}
+	}
 
 	void FixedUpdate ()
 	{
@@ -82,7 +103,9 @@ public class Enemy : MonoBehaviour
 		if (movingToCorpse) {
 			StopCoroutine ("Patrol");
 			moving = false;
-			sr.sprite = alert;
+			//anm.enabled = false;
+			anm.SetBool ("Alert", true);
+			anm.SetBool ("Transition", false);
 			Vector2 dir = transform.position - corpse.transform.position;
 			idle = false;
 			if (Mathf.Abs (dir.x) < 1.3 && waitingForCorpse == false) {
@@ -101,8 +124,10 @@ public class Enemy : MonoBehaviour
 		moving = true;
 		yield return new WaitForSeconds (waitTime);
 		sightEnd.transform.localPosition = new Vector2 (20, 0);
+		sr.flipX = true;
 		MoveEnemy (speed, Vector2.left);
 		yield return new WaitForSeconds (waitTime);
+		sr.flipX = false;
 		sightEnd.transform.localPosition = new Vector2 (-20, 0);
 		MoveEnemy (-speed, Vector2.right);
 		moving = false;
@@ -116,7 +141,9 @@ public class Enemy : MonoBehaviour
 		yield return new WaitForSeconds (waitTime - 3);
 		Destroy (corpse);
 		idle = true;
-		sr.sprite = idles;
+		anm.SetBool ("Transition", true);
+		anm.SetBool ("Alert", false);
+		//sr.sprite = idles;
 		waitingForCorpse = false;
 	}
 

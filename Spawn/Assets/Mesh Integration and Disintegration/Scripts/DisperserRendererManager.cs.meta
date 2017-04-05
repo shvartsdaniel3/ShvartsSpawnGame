@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 7bcc58095849f5f4080e6cdda3e27321
+timeCreated: 1450139691
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - prefabSubmesh: {fileID: 112802, guid: 448cac81f760834479112112e634de91, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

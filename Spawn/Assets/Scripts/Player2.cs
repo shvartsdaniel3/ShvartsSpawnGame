@@ -35,6 +35,9 @@ public class Player2 : MonoBehaviour
 	bool spawning = false;
 	int curLives;
 	GameObject child;
+	Animator anm;
+	bool inAnim;
+	bool dead;
 
 	void Start ()
 	{
@@ -50,16 +53,21 @@ public class Player2 : MonoBehaviour
 		originalLoc = transform.position;
 		gameObject.layer = 8;
 		sr = gameObject.GetComponent <SpriteRenderer> ();
+		anm = gameObject.GetComponent <Animator> ();
 		sr.sprite = alive;
 		lc = GameObject.FindObjectOfType<LifeCount> ();
 		gameObject.tag = 
 		lc.gameLives.ToString ();
 		awake = true;
 		curLives = lc.numLife;
+		anm.enabled = true;
 	}
 
 	void Update ()
 	{
+		if (awake & !inAnim) {
+			StartCoroutine (Blink ());
+		}
 		rb.gravityScale = gravity;
 		if (awake == true) {
 			if (onFloor) {
@@ -74,12 +82,16 @@ public class Player2 : MonoBehaviour
 	
 		if (lc.numLife == curLives + 1) {
 			curLives = lc.numLife;
-			if (sr.sprite == alive) {
+			if (!awake && !dead) {
+				anm.enabled = false;
 				sr.sprite = d1;
+				dead = true;
 			} else if (sr.sprite == d1) {
 				sr.sprite = d2;
+				anm.SetBool ("Dead2", true);
 			} else if (sr.sprite == d2) {
 				sr.sprite = d3;
+				anm.SetBool ("Dead3", true);
 			}
 		}
 	}
@@ -115,9 +127,11 @@ public class Player2 : MonoBehaviour
 			}
 			float goDir = 0;
 			if (Input.GetKey (left) || Input.GetKey (leftA)) {
+				sr.flipX = true;
 				goDir--;
 			}
 			if (Input.GetKey (right) || Input.GetKey (rightA)) {
+				sr.flipX = false;
 				goDir++;
 			}
 			if (onFloor) {
@@ -128,6 +142,16 @@ public class Player2 : MonoBehaviour
 				rb.AddForce (Vector2.left * airDrag * Mathf.Sign (rb.velocity.x) * Mathf.Pow (rb.velocity.x, 2));
 			}
 		}
+	}
+
+	private IEnumerator Blink ()
+	{
+		inAnim = true;
+		anm.SetBool ("Blink", false);
+		float timeNumber = Random.Range (0, 10);
+		yield return new WaitForSeconds (timeNumber);
+		anm.SetBool ("Blink", true);
+		inAnim = false;
 	}
 
 	private IEnumerator Restart ()
