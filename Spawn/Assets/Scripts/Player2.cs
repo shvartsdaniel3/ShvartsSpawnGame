@@ -38,6 +38,8 @@ public class Player2 : MonoBehaviour
 	Animator anm;
 	bool inAnim;
 	bool dead;
+	public AudioClip glitch;
+
 
 	void Start ()
 	{
@@ -61,6 +63,7 @@ public class Player2 : MonoBehaviour
 		awake = true;
 		curLives = lc.numLife;
 		anm.enabled = true;
+		sr.sortingOrder = 1;
 	}
 
 	void Update ()
@@ -72,6 +75,8 @@ public class Player2 : MonoBehaviour
 		if (awake == true) {
 			if (onFloor) {
 				if (Input.GetKeyDown (KeyCode.R)) {
+					Global.me.restart = true;
+					Global.me.sound.PlaySound (glitch, 0.6f, false);
 					StartCoroutine (Restart ());
 				}
 			}
@@ -86,6 +91,7 @@ public class Player2 : MonoBehaviour
 				anm.enabled = false;
 				sr.sprite = d1;
 				dead = true;
+				sr.sortingOrder = 0;
 			} else if (sr.sprite == d1) {
 				sr.sprite = d2;
 				anm.SetBool ("Dead2", true);

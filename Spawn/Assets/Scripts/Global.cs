@@ -15,7 +15,9 @@ public class Global : MonoBehaviourSingleton<Global>
 	public bool levelWon = false;
 	public Button rButton;
 	public Button nButton;
-	public Material grimeMat;
+	//public Material grimeMat;
+	public bool restart = false;
+	public Sound sound;
 
 	void Start ()
 	{
@@ -31,7 +33,7 @@ public class Global : MonoBehaviourSingleton<Global>
 
 	void Update ()
 	{
-		grimeMat.SetVector ("_GrimeOffset", new Vector4 (Random.value, Random.value, 0, 0));
+		//grimeMat.SetVector ("_GrimeOffset", new Vector4 (Random.value, Random.value, 0, 0));
 		if (Input.GetKeyDown (KeyCode.Q)) {
 			SceneManager.LoadScene (SceneManager.GetActiveScene ().buildIndex);
 		}

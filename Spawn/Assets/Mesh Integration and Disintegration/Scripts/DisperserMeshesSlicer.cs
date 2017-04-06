@@ -102,7 +102,7 @@ public class DisperserMeshesSlicer
 
 			submesh.RecalculateBounds();
 			submesh.RecalculateNormals();
-			submesh.Optimize();
+			;
 
 			// Add the submesh to a list of submeshes
 			submeshes.Add(submesh);

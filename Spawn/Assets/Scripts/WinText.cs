@@ -19,7 +19,7 @@ public class WinText : MonoBehaviour
 	void Update ()
 	{
 		if (Global.me.levelWon) {
-			text.text = "You Win!";
+			text.text = "LEVEL COMPLETE";
 		}
 	}
 }

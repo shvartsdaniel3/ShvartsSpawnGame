@@ -25,6 +25,8 @@ public class Enemy : MonoBehaviour
 	bool hitting = false;
 	Animator anm;
 	bool inAnim;
+	public AudioClip spotted;
+	bool played = false;
 
 	void Start ()
 	{
@@ -77,6 +79,7 @@ public class Enemy : MonoBehaviour
 		//StartCoroutine ("Wait");
 		anm.SetBool ("Transition", false);
 		anm.SetBool ("Alert", true);
+		Global.me.sound.PlaySound (spotted, 0.35f, false);
 		if (Global.me.timesCast == 0) {
 			Global.me.timesCast += 1;
 			Global.me.player.RestartFromOutside ();
@@ -104,6 +107,10 @@ public class Enemy : MonoBehaviour
 			StopCoroutine ("Patrol");
 			moving = false;
 			//anm.enabled = false;
+			if (played == false) {
+				Global.me.sound.PlaySound (spotted, 0.35f, false);
+				played = true;
+			}
 			anm.SetBool ("Alert", true);
 			anm.SetBool ("Transition", false);
 			Vector2 dir = transform.position - corpse.transform.position;
