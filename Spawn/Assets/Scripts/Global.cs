@@ -18,6 +18,7 @@ public class Global : MonoBehaviourSingleton<Global>
 	//public Material grimeMat;
 	public bool restart = false;
 	public Sound sound;
+	public bool explode = false;
 
 	void Start ()
 	{

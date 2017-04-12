@@ -26,7 +26,9 @@ public class Enemy : MonoBehaviour
 	Animator anm;
 	bool inAnim;
 	public AudioClip spotted;
+	public AudioClip explode;
 	bool played = false;
+	ParticleSystem particle;
 
 	void Start ()
 	{
@@ -35,6 +37,7 @@ public class Enemy : MonoBehaviour
 		sr = GetComponent<SpriteRenderer> ();
 		sr.flipX = true;
 		anm = gameObject.GetComponent <Animator> ();
+		particle = gameObject.GetComponentInChildren<ParticleSystem> ();
 	}
 
 	void RayCasting ()
@@ -107,10 +110,11 @@ public class Enemy : MonoBehaviour
 			StopCoroutine ("Patrol");
 			moving = false;
 			//anm.enabled = false;
-			if (played == false) {
+			if (!played) {
 				Global.me.sound.PlaySound (spotted, 0.35f, false);
 				played = true;
 			}
+			particle.Play ();
 			anm.SetBool ("Alert", true);
 			anm.SetBool ("Transition", false);
 			Vector2 dir = transform.position - corpse.transform.position;
@@ -122,6 +126,8 @@ public class Enemy : MonoBehaviour
 				rb.velocity = (-dir.normalized * 3f);
 				//rb.AddForce (-dir.normalized * floorForce * 0.05f);
 			}
+		} else {
+			particle.Stop ();
 		}
 	}
 
@@ -146,7 +152,12 @@ public class Enemy : MonoBehaviour
 		movingToCorpse = false;
 		waitingForCorpse = true;
 		yield return new WaitForSeconds (waitTime - 3);
+
+		Global.me.explode = true;
+		Global.me.sound.PlaySound (explode, 1, false);
+		yield return new WaitForSeconds (0.02f);
 		Destroy (corpse);
+		played = false;
 		idle = true;
 		anm.SetBool ("Transition", true);
 		anm.SetBool ("Alert", false);

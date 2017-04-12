@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Kino;
+using UnityStandardAssets.ImageEffects;
 
 public class Screenshake : MonoBehaviour
 {
@@ -12,13 +13,16 @@ public class Screenshake : MonoBehaviour
 	float screenshakeTimer = 0;
 	float thisMagnitude = 0;
 	AnalogGlitch glitch;
-
+	BlurOptimized blur;
 
 	void Start ()
 	{
 		defaultCameraPos = transform.position;
 		glitch = gameObject.GetComponent<AnalogGlitch> ();
-
+		blur = gameObject.GetComponent<BlurOptimized> ();
+		blur.blurSize = 0;
+		blur.blurIterations = 1;
+		blur.downsample = 0;
 	}
 	
 	// Update is called once per frame
@@ -45,13 +49,19 @@ public class Screenshake : MonoBehaviour
 			glitch.verticalJump = 0;
 			glitch.colorDrift = 0;
 		}
+
+		if (Global.me.levelWon) {
+			blur.blurSize = 5;
+			blur.blurIterations = 2;
+			blur.downsample = 1;
+		}
 	}
 
 	public void SetScreenshake (float magnitude, float duration, Vector3 direction)
 	{
 		thisMagnitude = magnitude;
 		screenshakeTimer = duration;
-		weightedDirection = weightedDirection;
+		weightedDirection = direction;
 	}
 
 	public void SetScreenshake (float magnitude, float duration)

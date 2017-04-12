@@ -39,6 +39,11 @@ public class Player2 : MonoBehaviour
 	bool inAnim;
 	bool dead;
 	public AudioClip glitch;
+	public AudioClip jumpSound;
+	ParticleSystem[] particle;
+	public ParticleSystem explosion;
+	ParticleSystem jumpPart;
+	Screenshake shake;
 
 
 	void Start ()
@@ -64,10 +69,25 @@ public class Player2 : MonoBehaviour
 		curLives = lc.numLife;
 		anm.enabled = true;
 		sr.sortingOrder = 1;
+		particle = gameObject.GetComponentsInChildren<ParticleSystem> ();
+		foreach (ParticleSystem i in particle) {
+			if (i.tag.ToString () == "Explosion") {
+				explosion = i;
+			} else if (i.tag.ToString () == "jump") {
+				jumpPart = i;
+			}
+		}
+		shake = GameObject.FindObjectOfType<Screenshake> ();
 	}
 
 	void Update ()
 	{
+
+		if (Global.me.explode && !awake) {
+			explosion.Play ();
+			explosion.transform.parent = null;
+			Global.me.explode = false;
+		}
 		if (awake & !inAnim) {
 			StartCoroutine (Blink ());
 		}
@@ -102,6 +122,7 @@ public class Player2 : MonoBehaviour
 		}
 	}
 
+
 	void OnTriggerEnter2D (Collider2D collision)
 	{
 		if (collision.gameObject.tag == "floor") {
@@ -122,9 +143,12 @@ public class Player2 : MonoBehaviour
 
 	void FixedUpdate ()
 	{
+
 		Physics2D.IgnoreLayerCollision (8, 13, true);
 		if (awake == true) {
 			if (jumpFlag && onFloor) {
+				jumpPart.Play ();
+				Global.me.sound.PlaySound (jumpSound, 0.5f, false);
 				rb.AddForce (Vector2.up * jumpForce, ForceMode2D.Impulse);
 			}
 			jumpFlag = false;
